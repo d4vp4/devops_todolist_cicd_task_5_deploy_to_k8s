@@ -9,11 +9,11 @@ on:
       image_tag:
         required: true
         type: string
-        description: "Tag of the image to deploy (e.g. commit sha)"
+        description: "Tag of the image to deploy"
       docker_image_name:
         required: true
         type: string
-        description: "Name of the docker image repository"
+        description: "Full repository name (user/repo)"
 
 jobs:
   deploy:
@@ -37,7 +37,7 @@ jobs:
       - name: Helm Install (Dry Run)
         run: |
           helm install --dry-run --debug todo-release ./helm-charts/todoapp \
-            --set image.repository=${{ secrets.DOCKERHUB_USERNAME }}/${{ inputs.docker_image_name }} \
+            --set image.repository=${{ inputs.docker_image_name }} \
             --set image.tag=${{ inputs.image_tag }}
 
       - name: Helm Upgrade --install (Atomic)
@@ -46,5 +46,5 @@ jobs:
             --atomic \
             --wait \
             --timeout 5m \
-            --set image.repository=${{ secrets.DOCKERHUB_USERNAME }}/${{ inputs.docker_image_name }} \
+            --set image.repository=${{ inputs.docker_image_name }} \
             --set image.tag=${{ inputs.image_tag }}
